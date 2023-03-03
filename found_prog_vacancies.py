@@ -61,10 +61,10 @@ def predict_rub_salary_hh(lang):
             'area': 1,
             'page': page
         }
-        response = requests.get('https://api.hh.ru/vacancies', params=payload)
-        response.raise_for_status()
-        response_payload = response.json()
-        for vacancie in response_payload['items']:
+        response_hh = requests.get('https://api.hh.ru/vacancies', params=payload)
+        response_hh.raise_for_status()
+        response_hh_payload = response_hh.json()
+        for vacancie in response_hh_payload['items']:
             vacancie_salary = vacancie['salary']
             if vacancie_salary:
                 salary_from = vacancie_salary['from']
@@ -73,9 +73,9 @@ def predict_rub_salary_hh(lang):
                 salary = predict_rub_salary(salary_from, salary_to, salary_currency)
                 if salary:
                     hh_salaries.append(salary)
-        if page == response_payload['pages'] - 1:
+        if page == response_hh_payload['pages'] - 1:
             break
-    vacancies_found = response_payload['found']
+    vacancies_found = response_hh_payload['found']
     vacancies_processed = len(hh_salaries)
     if vacancies_processed:
         average_salary = sum(hh_salaries) // vacancies_processed
