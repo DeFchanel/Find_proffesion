@@ -68,13 +68,14 @@ def get_hh_salary_statistics(lang):
         response_hh_payload = response_hh.json()
         for vacancy in response_hh_payload['items']:
             vacancy_salary = vacancy['salary']
-            if vacancy_salary:
-                salary_from = vacancy_salary['from']
-                salary_to = vacancy_salary['to']
-                salary_currency = vacancy_salary['currency']
-                salary = predict_rub_salary(salary_from, salary_to, salary_currency)
-                if salary:
-                    hh_salaries.append(salary)
+            if not vacancy_salary:
+                continue
+            salary_from = vacancy_salary['from']
+            salary_to = vacancy_salary['to']
+            salary_currency = vacancy_salary['currency']
+            salary = predict_rub_salary(salary_from, salary_to, salary_currency)
+            if salary:
+                hh_salaries.append(salary)
         if page == response_hh_payload['pages'] - 1:
             break
     vacancies_found = response_hh_payload['found']
@@ -105,7 +106,7 @@ def make_table(lang_salaries, title):
 if __name__ == '__main__':
     load_dotenv()
     sj_key = os.getenv('SUPERJOB_KEY')
-    prog_lang = [
+    prog_langs = [
         'JavaScript',
         'Java',
         'Python'
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     lang_salaries_statistics_sj = {}
     title_sj = 'SuperJob Moscow'
     title_hh = 'HeadHunter Moscow'
-    for lang in prog_lang:
+    for lang in prog_langs:
         lang_salary_statistics_sj = get_sj_salary_statistics(lang, sj_key)
         lang_salaries_statistics_sj[lang] = lang_salary_statistics_sj
         lang_salary_statistics_hh = get_hh_salary_statistics(lang)
